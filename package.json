@@ -1,5 +1,5 @@
 {
-    "name": "puppeteer-extra-plugin-recaptcha-cm",
+    "name": "last-capmonster",
     "version": "1.0.1",
     "description": "A puppeteer-extra plugin that implements CapMonster support for puppeteer-extra-plugin-recaptcha.",
     "types": "dist/index.d.ts",

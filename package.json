@@ -28,7 +28,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/starker22/puppeteer-extra-plugin-recaptcha-cm"
+        "url": "https://github.com/starker22/last-capmonster"
     },
     "author": "LasT",
     "license": "MIT",

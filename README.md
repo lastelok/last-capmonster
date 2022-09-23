@@ -7,7 +7,7 @@
 ### Install
 
 ```bash
-npm i puppeteer-extra-plugin-recaptcha-cm
+npm i last-capmonster
 ```
 
 ### Usage

@@ -15,7 +15,7 @@ npm i last-capmonster
 ```js
 const puppeteer = require('puppeteer-extra')
 const { default: RecaptchaPlugin, BuiltinSolutionProviders } = require('puppeteer-extra-plugin-recaptcha')
-const CapMonsterProvider = require('puppeteer-extra-plugin-recaptcha-capmonster')
+const CapMonsterProvider = require('last-capmonster')
 
 CapMonsterProvider.use(BuiltinSolutionProviders)
 

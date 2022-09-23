@@ -3,12 +3,12 @@
  * https://github.com/https://github.com/notsapinho/puppeteer-extra-plugin-recaptcha-capmonster.git
  * @license MIT
  */
-'use strict';
+'use strict'
 
-Object.defineProperty(exports, '__esModule', { value: true });
+Object.defineProperty(exports, '__esModule', { value: true })
 
-var Debug = require('debug');
-var axios = require('axios');
+var Debug = require('debug')
+var axios = require('axios')
 var colors = require('colors')
 
 const requestTimeoutInterceptor = (config) => {
@@ -37,30 +37,31 @@ axios.defaults.proxy = false
 axios.defaults.timeout = 35000
 axios.interceptors.request.use(requestTimeoutInterceptor)
 
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+function _interopDefaultLegacy(e) {
+    return e && typeof e === 'object' && 'default' in e ? e : { default: e }
+}
 
-var Debug__default = /*#__PURE__*/_interopDefaultLegacy(Debug);
-var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
+var Debug__default = /*#__PURE__*/ _interopDefaultLegacy(Debug)
+var axios__default = /*#__PURE__*/ _interopDefaultLegacy(axios)
 
 // https://github.com/hanahaneull/capmonster/blob/master/src/index.js adapted to Typescript
 class CapMonster {
     constructor(clientKey, opts) {
         // console.log(`index.cjs.js`)
-    
 
-        this.setApiKey = (apiKey) => (this.clientKey = apiKey);
+        this.setApiKey = (apiKey) => (this.clientKey = apiKey)
         // this.getBalance = () => this.$http.post("/getBalance", {
         //     clientkey: this.clientKey
         // });
-        this.createTask = (task = {}) => this.$http.post("/createTask", {
-            clientKey: this.clientKey,
-            task
-        });
+        // this.createTask = (task = {}) =>
+        //     this.$http.post('/createTask', {
+        //         clientKey: this.clientKey,
+        //         task,
+        //     })
         this.decodeReCaptcha = async (method, websiteURL, websiteKey, callback) => {
-
-            var _a;
-            let solved = false;
-            let retries = 0;
+            var _a
+            let solved = false
+            let retries = 0
             // const response = await this.$http.post("/createTask", {
             //     clientKey: this.clientKey,
             //     task: {
@@ -74,42 +75,43 @@ class CapMonster {
                 task: {
                     type: method,
                     websiteURL: websiteURL,
-                    websiteKey: websiteKey
-                }
+                    websiteKey: websiteKey,
+                },
             })
 
             while (!solved) {
                 if (retries === this.opts.retries) {
-                    return callback("CAPTCHA_FAILED_TOO_MANY_TIMES");
+                    return callback('CAPTCHA_FAILED_TOO_MANY_TIMES')
                 }
-                retries++;
-                await new Promise((resolve) => setTimeout(resolve, this.opts.pollingInterval));
+                retries++
+                await new Promise((resolve) => setTimeout(resolve, this.opts.pollingInterval))
                 // const result = await this.getResult(response.data.taskId);
                 const result = await this.capMonsterGetTaskResult({
-                    task_id: response.taskId
+                    task_id: response.taskId,
                 })
 
-                if (result.status === "ready") {
-                    solved = true;
+                if (result.status === 'ready') {
+                    solved = true
                     return callback(null, {
                         id: response.taskId,
-                        text: (_a = result.solution) === null || _a === void 0 ? void 0 : _a.gRecaptchaResponse
-                    });
+                        text: (_a = result.solution) === null || _a === void 0 ? void 0 : _a.gRecaptchaResponse,
+                    })
                 }
             }
-        };
-        this.getResult = (taskId) => this.$http.post("/getTaskResult", {
-            clientKey: this.clientKey,
-            taskId
-        });
+        }
+        // this.getResult = (taskId) =>
+        //     this.$http.post('/getTaskResult', {
+        //         clientKey: this.clientKey,
+        //         taskId,
+        //     })
         if (!opts) {
             this.opts = {
-                pollingInterval: 2000,
-                retries: 50
-            };
+                pollingInterval: 5000,
+                retries: 20,
+            }
         }
-        this.clientKey = clientKey;
-        this.$http = axios__default["default"].create({ baseURL: "https://api.capmonster.cloud" });
+        this.clientKey = clientKey
+        // this.$http = axios__default['default'].create({ baseURL: 'https://api.capmonster.cloud' })
     }
 
     async doRequest(settings) {
@@ -146,7 +148,7 @@ class CapMonster {
                 },
                 data: {
                     clientKey: this.clientKey,
-                    task: config.task
+                    task: config.task,
                 },
             },
         })
@@ -230,74 +232,71 @@ class CapMonster {
 
         console.log(`${time} ${log}`)
     }
-
 }
 
-const PROVIDER_ID = "capmonster";
-const debug = Debug__default["default"](`puppeteer-extra-plugin:recaptcha-capmonster:${PROVIDER_ID}`);
-const solver = new CapMonster();
-const secondsBetweenDates = (before, after) => (after.getTime() - before.getTime()) / 1000;
+const PROVIDER_ID = 'capmonster'
+const debug = Debug__default['default'](`puppeteer-extra-plugin:recaptcha-capmonster:${PROVIDER_ID}`)
+const solver = new CapMonster()
+const secondsBetweenDates = (before, after) => (after.getTime() - before.getTime()) / 1000
 async function decodeRecaptchaAsync(token, vendor, sitekey, url) {
     return new Promise((resolve) => {
-        const cb = (err, result) => resolve({ err, result });
+        const cb = (err, result) => resolve({ err, result })
         try {
-            solver.setApiKey(token);
-            let method = "NoCaptchaTaskProxyless";
-            if (vendor === "hcaptcha") {
-                method = "HCaptchaTaskProxyless";
+            solver.setApiKey(token)
+            let method = 'NoCaptchaTaskProxyless'
+            if (vendor === 'hcaptcha') {
+                method = 'HCaptchaTaskProxyless'
             }
-            solver.decodeReCaptcha(method, url, sitekey, cb);
+            solver.decodeReCaptcha(method, url, sitekey, cb)
+        } catch (error) {
+            return resolve({ err: error })
         }
-        catch (error) {
-            return resolve({ err: error });
-        }
-    });
+    })
 }
-async function getSolutions(captchas = [], token = "") {
-    const solutions = await Promise.all(captchas.map((c) => getSolution(c, token)));
-    return { solutions, error: solutions.find((s) => !!s.error) };
+async function getSolutions(captchas = [], token = '') {
+    const solutions = await Promise.all(captchas.map((c) => getSolution(c, token)))
+    return { solutions, error: solutions.find((s) => !!s.error) }
 }
 async function getSolution(captcha, token) {
     const solution = {
         _vendor: captcha._vendor,
-        provider: PROVIDER_ID
-    };
+        provider: PROVIDER_ID,
+    }
     try {
         if (!captcha || !captcha.sitekey || !captcha.url || !captcha.id) {
-            throw new Error("Missing data in captcha");
+            throw new Error('Missing data in captcha')
         }
-        solution.id = captcha.id;
-        solution.requestAt = new Date();
-        debug("Requesting solution..", solution);
-        const { err, result } = await decodeRecaptchaAsync(token, captcha._vendor, captcha.sitekey, captcha.url);
-        debug("Got response", { err, result });
-        if (err)
-            throw new Error(`${PROVIDER_ID} error: ${err}`);
+        solution.id = captcha.id
+        solution.requestAt = new Date()
+        debug('Requesting solution..', solution)
+        const { err, result } = await decodeRecaptchaAsync(token, captcha._vendor, captcha.sitekey, captcha.url)
+        debug('Got response', { err, result })
+        if (err) throw new Error(`${PROVIDER_ID} error: ${err}`)
         if (!result || !result.text || !result.id) {
-            throw new Error(`${PROVIDER_ID} error: Missing response data: ${result}`);
+            throw new Error(`${PROVIDER_ID} error: Missing response data: ${result}`)
         }
-        solution.providerCaptchaId = result.id;
-        solution.text = result.text;
-        solution.responseAt = new Date();
-        solution.hasSolution = !!solution.text;
-        solution.duration = secondsBetweenDates(solution.requestAt, solution.responseAt);
+        solution.providerCaptchaId = result.id
+        solution.text = result.text
+        solution.responseAt = new Date()
+        solution.hasSolution = !!solution.text
+        solution.duration = secondsBetweenDates(solution.requestAt, solution.responseAt)
+    } catch (error) {
+        debug('Error', error)
+        solution.error = error.toString()
     }
-    catch (error) {
-        debug("Error", error);
-        solution.error = error.toString();
-    }
-    return solution;
+    return solution
 }
 
 class Plugin {
     static use(providers) {
-        providers.push({ id: PROVIDER_ID, fn: getSolutions });
+        providers.push({ id: PROVIDER_ID, fn: getSolutions })
     }
 }
 
-exports["default"] = Plugin;
+exports['default'] = Plugin
 
-
-  module.exports = exports.default || {}
-  Object.entries(exports).forEach(([key, value]) => { module.exports[key] = value })
+module.exports = exports.default || {}
+Object.entries(exports).forEach(([key, value]) => {
+    module.exports[key] = value
+})
 //# sourceMappingURL=index.cjs.js.map
